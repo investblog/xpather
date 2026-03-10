@@ -8,3 +8,8 @@ dist/
 *.log
 .DS_Store
 Thumbs.db
+
+# Internal docs — not for distribution
+CLAUDE.md
+SPEC.md
+SPEC_REVIEW.md
