@@ -1,0 +1,70 @@
+{
+  "EXTENSION_NAME": {
+    "message": "XPath Helper"
+  },
+  "EXTENSION_DESCRIPTION": {
+    "message": "Поиск, генерация и тестирование XPath-выражений. Несколько вариантов с ранжированием, выбор элемента, без телеметрии."
+  },
+  "COMMAND_TOGGLE_PICKER": {
+    "message": "Включить/выключить выбор элемента"
+  },
+  "VARIANTS_TITLE": {
+    "message": "Варианты"
+  },
+  "HINT_PICK": {
+    "message": "Alt+клик для выбора · клик для копирования"
+  },
+  "STRATEGY_ID": {
+    "message": "id"
+  },
+  "STRATEGY_DATA_ATTR": {
+    "message": "data"
+  },
+  "STRATEGY_ATTRIBUTE": {
+    "message": "атрибут"
+  },
+  "STRATEGY_TEXT": {
+    "message": "текст"
+  },
+  "STRATEGY_CLASS": {
+    "message": "класс"
+  },
+  "STRATEGY_OPTIMIZED": {
+    "message": "опт"
+  },
+  "STRATEGY_ABSOLUTE": {
+    "message": "абс"
+  },
+  "COPY_SUCCESS": {
+    "message": "Скопировано!"
+  },
+  "INVALID_XPATH": {
+    "message": "Некорректное XPath-выражение"
+  },
+  "UNSUPPORTED_RESULT_TYPE": {
+    "message": "Поддерживаются только результаты узлов"
+  },
+  "TOO_MANY_MATCHES": {
+    "message": "Слишком много совпадений (результат обрезан)"
+  },
+  "MATCHES_COUNT": {
+    "message": "$COUNT$ совпадений",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "UNIQUE_MATCH": {
+    "message": "Уникальное совпадение"
+  },
+  "PICK_ELEMENT": {
+    "message": "Выбрать элемент"
+  },
+  "TOGGLE_THEME": {
+    "message": "Переключить тему"
+  },
+  "PIN_SIDE_PANEL": {
+    "message": "Закрепить в боковой панели"
+  }
+}

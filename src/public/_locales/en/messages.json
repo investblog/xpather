@@ -1,0 +1,70 @@
+{
+  "EXTENSION_NAME": {
+    "message": "XPath Helper"
+  },
+  "EXTENSION_DESCRIPTION": {
+    "message": "Find, generate, and test XPath expressions. Multiple ranked variants, element picker, zero telemetry."
+  },
+  "COMMAND_TOGGLE_PICKER": {
+    "message": "Toggle element picker"
+  },
+  "VARIANTS_TITLE": {
+    "message": "Variants"
+  },
+  "HINT_PICK": {
+    "message": "Alt+click to pick · click to copy"
+  },
+  "STRATEGY_ID": {
+    "message": "id"
+  },
+  "STRATEGY_DATA_ATTR": {
+    "message": "data"
+  },
+  "STRATEGY_ATTRIBUTE": {
+    "message": "attr"
+  },
+  "STRATEGY_TEXT": {
+    "message": "text"
+  },
+  "STRATEGY_CLASS": {
+    "message": "class"
+  },
+  "STRATEGY_OPTIMIZED": {
+    "message": "opt"
+  },
+  "STRATEGY_ABSOLUTE": {
+    "message": "abs"
+  },
+  "COPY_SUCCESS": {
+    "message": "Copied!"
+  },
+  "INVALID_XPATH": {
+    "message": "Invalid XPath expression"
+  },
+  "UNSUPPORTED_RESULT_TYPE": {
+    "message": "Only node results are supported"
+  },
+  "TOO_MANY_MATCHES": {
+    "message": "Too many matches (result truncated)"
+  },
+  "MATCHES_COUNT": {
+    "message": "$COUNT$ matches",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "UNIQUE_MATCH": {
+    "message": "Unique match"
+  },
+  "PICK_ELEMENT": {
+    "message": "Pick element"
+  },
+  "TOGGLE_THEME": {
+    "message": "Toggle theme"
+  },
+  "PIN_SIDE_PANEL": {
+    "message": "Pin to side panel"
+  }
+}

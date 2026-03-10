@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../../assets/css/theme.css" />
+    <link rel="stylesheet" href="../../assets/css/popup.css" />
+    <title>XPath Helper</title>
+  </head>
+  <body>
+    <div class="popup">
+      <header class="popup__header">
+        <h1 class="popup__title" data-i18n="EXTENSION_NAME">XPath Helper</h1>
+        <div class="popup__actions">
+          <button id="btn-pick" class="btn btn--icon" title="Pick element">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+              <path d="M2 2v5l2-2 3 6 1.5-.7L5.5 4 8 2H2z"/>
+            </svg>
+          </button>
+          <button id="btn-theme" class="btn btn--icon" title="Toggle theme">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+              <path d="M8 1a7 7 0 100 14A7 7 0 008 1zm0 12.5V2.5a5.5 5.5 0 010 11z"/>
+            </svg>
+          </button>
+          <button id="btn-pin" class="btn btn--icon" title="Pin to side panel">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+              <path d="M10 1L6 5H3v6l3.5.01L10 15V1z"/>
+            </svg>
+          </button>
+        </div>
+      </header>
+
+      <section class="popup__input-section">
+        <div class="input-group">
+          <input
+            id="xpath-input"
+            type="text"
+            class="input-group__field"
+            placeholder="//div[@id=&quot;example&quot;]"
+            spellcheck="false"
+            autocomplete="off"
+          />
+          <span id="match-count" class="input-group__badge">0</span>
+        </div>
+        <div id="result-preview" class="result-preview"></div>
+        <div id="error-message" class="error-message" hidden></div>
+      </section>
+
+      <section class="popup__variants" id="variants-section" hidden>
+        <h2 class="popup__section-title" data-i18n="VARIANTS_TITLE">Variants</h2>
+        <ul id="variant-list" class="variant-list"></ul>
+      </section>
+
+      <footer class="popup__footer">
+        <span class="popup__hint" data-i18n="HINT_PICK">Alt+click to pick · click to copy</span>
+      </footer>
+    </div>
+
+    <script type="module" src="./main.ts"></script>
+  </body>
+</html>

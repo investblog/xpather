@@ -1,0 +1,33 @@
+{
+  "name": "xpath-helper",
+  "version": "1.0.0",
+  "description": "Find, generate, and test XPath expressions. Multiple ranked variants, element picker, zero telemetry.",
+  "type": "module",
+  "scripts": {
+    "dev": "wxt",
+    "dev:firefox": "wxt -b firefox",
+    "build": "wxt build",
+    "build:firefox": "wxt build -b firefox",
+    "build:edge": "wxt build -b edge",
+    "build:opera": "wxt build -b opera",
+    "build:all": "wxt build && wxt build -b firefox && wxt build -b edge && wxt build -b opera",
+    "zip": "wxt zip",
+    "zip:firefox": "wxt zip -b firefox",
+    "zip:edge": "wxt zip -b edge",
+    "zip:opera": "wxt zip -b opera",
+    "zip:all": "wxt zip && wxt zip -b firefox && wxt zip -b edge && wxt zip -b opera",
+    "typecheck": "tsc --noEmit",
+    "lint": "biome check src/ wxt.config.ts vitest.config.ts",
+    "lint:fix": "biome check --write src/ wxt.config.ts vitest.config.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "check": "tsc --noEmit && biome check src/ wxt.config.ts vitest.config.ts && vitest run"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.3.14",
+    "jsdom": "^24.1.3",
+    "typescript": "^5.7.0",
+    "vitest": "^4.0.18",
+    "wxt": "^0.19.0"
+  }
+}
