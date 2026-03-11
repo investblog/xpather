@@ -13,6 +13,11 @@ export default defineBackground(() => {
     return state;
   }
 
+  function isScriptableUrl(url: string | undefined): boolean {
+    if (!url) return false;
+    return url.startsWith('http://') || url.startsWith('https://');
+  }
+
   // Handle messages from popup/sidepanel
   browser.runtime.onMessage.addListener((raw: unknown, sender, sendResponse) => {
     const message = raw as ExtensionMessage;
@@ -32,7 +37,10 @@ export default defineBackground(() => {
     sendResponse: (response: unknown) => void,
   ): Promise<void> {
     const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
-    if (!tab?.id) return;
+    if (!tab?.id || !isScriptableUrl(tab.url)) {
+      sendResponse({ ok: false, error: 'TAB_NOT_SCRIPTABLE' });
+      return;
+    }
 
     const tabId = tab.id;
 
@@ -40,8 +48,7 @@ export default defineBackground(() => {
       case 'picker:start': {
         const state = getTabState(tabId);
         state.pickerActive = true;
-        await ensureContentScript(tabId);
-        await browser.tabs.sendMessage(tabId, message);
+        await sendToTab(tabId, message);
         sendResponse({ ok: true });
         break;
       }
@@ -49,7 +56,7 @@ export default defineBackground(() => {
       case 'picker:stop': {
         const state = getTabState(tabId);
         state.pickerActive = false;
-        await browser.tabs.sendMessage(tabId, message).catch(() => {});
+        await sendToTab(tabId, message);
         sendResponse({ ok: true });
         break;
       }
@@ -57,15 +64,14 @@ export default defineBackground(() => {
       case 'xpath:evaluate': {
         const state = getTabState(tabId);
         state.lastInput = message.xpath;
-        await ensureContentScript(tabId);
-        const result = await browser.tabs.sendMessage(tabId, message);
+        const result = await sendToTab(tabId, message);
         sendResponse(result);
         break;
       }
 
       case 'highlight:preview':
       case 'highlight:clear': {
-        await browser.tabs.sendMessage(tabId, message).catch(() => {});
+        await sendToTab(tabId, message);
         sendResponse({ ok: true });
         break;
       }
@@ -87,22 +93,20 @@ export default defineBackground(() => {
       state.pickerActive = false;
       state.lastVariants = (message as PickerResultMessage).variants;
 
-      // Update badge
       const count = state.lastVariants.length;
       void browser.action.setBadgeText({ text: count > 0 ? String(count) : '', tabId });
       void browser.action.setBadgeBackgroundColor({ color: '#22c55e', tabId });
+
+      // Relay to popup/side panel
+      void browser.runtime.sendMessage(message).catch(() => {});
     }
   }
 
-  async function ensureContentScript(tabId: number): Promise<void> {
+  async function sendToTab(tabId: number, message: ExtensionMessage): Promise<unknown> {
     try {
-      await browser.tabs.sendMessage(tabId, { type: 'highlight:clear' });
+      return await browser.tabs.sendMessage(tabId, message);
     } catch {
-      // Content script not injected yet — inject it
-      await browser.scripting.executeScript({
-        target: { tabId },
-        files: ['content-scripts/content.js'],
-      });
+      return null;
     }
   }
 
@@ -111,16 +115,15 @@ export default defineBackground(() => {
     if (command !== 'toggle-picker') return;
 
     const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
-    if (!tab?.id) return;
+    if (!tab?.id || !isScriptableUrl(tab.url)) return;
 
     const state = getTabState(tab.id);
     if (state.pickerActive) {
       state.pickerActive = false;
-      await browser.tabs.sendMessage(tab.id, { type: 'picker:stop' }).catch(() => {});
+      await sendToTab(tab.id, { type: 'picker:stop' });
     } else {
       state.pickerActive = true;
-      await ensureContentScript(tab.id);
-      await browser.tabs.sendMessage(tab.id, { type: 'picker:start' });
+      await sendToTab(tab.id, { type: 'picker:start' });
     }
   });
 

@@ -37,6 +37,7 @@ export interface XPathResultMessage {
 export interface HighlightPreviewMessage {
   type: 'highlight:preview';
   xpath: string;
+  index?: number;
 }
 
 export interface HighlightClearMessage {

@@ -34,10 +34,7 @@ export function isPickerActive(): boolean {
 }
 
 function handleMouseMove(e: MouseEvent): void {
-  if (!active || !e.altKey) {
-    clearPickerHighlight();
-    return;
-  }
+  if (!active) return;
 
   const target = e.target;
   if (!(target instanceof HTMLElement)) return;
@@ -51,7 +48,7 @@ function handleMouseMove(e: MouseEvent): void {
 }
 
 function handleClick(e: MouseEvent): void {
-  if (!active || !e.altKey) return;
+  if (!active) return;
 
   e.preventDefault();
   e.stopPropagation();

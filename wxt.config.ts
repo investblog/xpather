@@ -23,7 +23,7 @@ export default defineConfig({
 
     permissions: [
       'activeTab',
-      'scripting',
+      'tabs',
       ...(browser !== 'firefox' && browser !== 'opera' ? (['sidePanel'] as const) : []),
     ],
 

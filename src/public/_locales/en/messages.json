@@ -12,28 +12,31 @@
     "message": "Variants"
   },
   "HINT_PICK": {
-    "message": "Alt+click to pick · click to copy"
+    "message": "Pick mode: hover + click · Esc to cancel"
   },
   "STRATEGY_ID": {
-    "message": "id"
+    "message": "By ID"
   },
   "STRATEGY_DATA_ATTR": {
-    "message": "data"
+    "message": "By data-*"
   },
   "STRATEGY_ATTRIBUTE": {
-    "message": "attr"
+    "message": "By attribute"
   },
   "STRATEGY_TEXT": {
-    "message": "text"
+    "message": "By text"
   },
   "STRATEGY_CLASS": {
-    "message": "class"
+    "message": "By class"
   },
   "STRATEGY_OPTIMIZED": {
-    "message": "opt"
+    "message": "Shortest path"
   },
   "STRATEGY_ABSOLUTE": {
-    "message": "abs"
+    "message": "Absolute path"
+  },
+  "BEST_VARIANT": {
+    "message": "best"
   },
   "COPY_SUCCESS": {
     "message": "Copied!"
@@ -60,6 +63,9 @@
   },
   "PICK_ELEMENT": {
     "message": "Pick element"
+  },
+  "PICK_ELEMENT_STOP": {
+    "message": "Stop picker"
   },
   "TOGGLE_THEME": {
     "message": "Toggle theme"

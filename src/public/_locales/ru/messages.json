@@ -12,28 +12,31 @@
     "message": "Варианты"
   },
   "HINT_PICK": {
-    "message": "Alt+клик для выбора · клик для копирования"
+    "message": "Режим выбора: наведи + клик · Esc для отмены"
   },
   "STRATEGY_ID": {
-    "message": "id"
+    "message": "По ID"
   },
   "STRATEGY_DATA_ATTR": {
-    "message": "data"
+    "message": "По data-*"
   },
   "STRATEGY_ATTRIBUTE": {
-    "message": "атрибут"
+    "message": "По атрибуту"
   },
   "STRATEGY_TEXT": {
-    "message": "текст"
+    "message": "По тексту"
   },
   "STRATEGY_CLASS": {
-    "message": "класс"
+    "message": "По классу"
   },
   "STRATEGY_OPTIMIZED": {
-    "message": "опт"
+    "message": "Кратчайший путь"
   },
   "STRATEGY_ABSOLUTE": {
-    "message": "абс"
+    "message": "Абсолютный путь"
+  },
+  "BEST_VARIANT": {
+    "message": "лучший"
   },
   "COPY_SUCCESS": {
     "message": "Скопировано!"
@@ -60,6 +63,9 @@
   },
   "PICK_ELEMENT": {
     "message": "Выбрать элемент"
+  },
+  "PICK_ELEMENT_STOP": {
+    "message": "Остановить выбор"
   },
   "TOGGLE_THEME": {
     "message": "Переключить тему"

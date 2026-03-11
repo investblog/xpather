@@ -7,8 +7,15 @@ export interface XPathVariant {
   label: string;
 }
 
+export interface SerializedNode {
+  tag: string;
+  attrs: [string, string][];
+  text: string;
+  children: number;
+}
+
 export interface XPathEvaluationResult {
-  nodes: string[];
+  nodes: SerializedNode[];
   count: number;
   error: string | null;
   truncated: boolean;

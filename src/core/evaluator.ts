@@ -1,5 +1,5 @@
 import { MAX_RESULTS } from '@shared/constants';
-import type { XPathEvaluationResult } from '@shared/types';
+import type { SerializedNode, XPathEvaluationResult } from '@shared/types';
 
 export function evaluateXPath(
   xpath: string,
@@ -26,7 +26,7 @@ export function evaluateXPath(
     for (let i = 0; i < collected; i++) {
       const node = result.snapshotItem(i);
       if (node) {
-        nodes.push(nodeToText(node));
+        nodes.push(serializeNode(node));
       }
     }
 
@@ -71,9 +71,24 @@ export function evaluateXPathNodes(
   }
 }
 
-function nodeToText(node: Node): string {
+function serializeNode(node: Node): SerializedNode {
   if (node.nodeType === Node.ELEMENT_NODE) {
-    return (node as Element).textContent?.trim().slice(0, 200) ?? '';
+    const el = node as Element;
+    const attrs: [string, string][] = [];
+    for (const attr of el.attributes) {
+      attrs.push([attr.name, attr.value.length > 80 ? `${attr.value.slice(0, 80)}…` : attr.value]);
+    }
+    return {
+      tag: el.tagName.toLowerCase(),
+      attrs,
+      text: el.textContent?.trim().slice(0, 120) ?? '',
+      children: el.childElementCount,
+    };
   }
-  return node.nodeValue?.trim().slice(0, 200) ?? '';
+  return {
+    tag: '#text',
+    attrs: [],
+    text: node.nodeValue?.trim().slice(0, 120) ?? '',
+    children: 0,
+  };
 }

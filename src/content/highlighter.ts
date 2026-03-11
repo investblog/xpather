@@ -14,7 +14,7 @@ const CHANNEL_COLORS: Record<HighlightChannel, string> = {
   preview: '#3b82f6',
 };
 
-export function highlightMatches(xpath: string, channel: HighlightChannel): number {
+export function highlightMatches(xpath: string, channel: HighlightChannel, index?: number): number {
   clearChannel(channel);
 
   if (!xpath.trim()) return 0;
@@ -23,10 +23,20 @@ export function highlightMatches(xpath: string, channel: HighlightChannel): numb
   if (error) return 0;
 
   const overlays: HighlightOverlay[] = [];
-  for (const node of nodes) {
-    if (!(node instanceof Element)) continue;
-    const overlay = createOverlay(node, channel);
-    if (overlay) overlays.push(overlay);
+
+  if (index != null && index >= 0 && index < nodes.length) {
+    const node = nodes[index];
+    if (node instanceof Element) {
+      const overlay = createOverlay(node, channel);
+      if (overlay) overlays.push(overlay);
+      node.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  } else {
+    for (const node of nodes) {
+      if (!(node instanceof Element)) continue;
+      const overlay = createOverlay(node, channel);
+      if (overlay) overlays.push(overlay);
+    }
   }
 
   channels.set(channel, overlays);

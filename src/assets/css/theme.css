@@ -15,6 +15,7 @@
   --error: #ef4444;
   --error-bg: rgba(239, 68, 68, 0.08);
   --copy-flash: rgba(59, 130, 246, 0.15);
+  --accent-selected: rgba(59, 130, 246, 0.1);
   --badge-bg: #e5e5e5;
   --badge-unique-bg: rgba(34, 197, 94, 0.15);
   --badge-unique-text: #16a34a;
@@ -37,6 +38,7 @@
   --error: #f87171;
   --error-bg: rgba(248, 113, 113, 0.1);
   --copy-flash: rgba(96, 165, 250, 0.2);
+  --accent-selected: rgba(96, 165, 250, 0.15);
   --badge-bg: #404040;
   --badge-unique-bg: rgba(74, 222, 128, 0.18);
   --badge-unique-text: #4ade80;
