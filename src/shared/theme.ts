@@ -38,7 +38,16 @@ export function initTheme(): Theme {
 
 export function cycleTheme(current: Theme): Theme {
   const order: Theme[] = ['system', 'light', 'dark'];
-  const next = order[(order.indexOf(current) + 1) % order.length];
+  const currentResolved = resolveTheme(current);
+  let idx = (order.indexOf(current) + 1) % order.length;
+  let next = order[idx];
+
+  // Skip state that resolves to the same visual theme (e.g., dark → system when system is dark)
+  if (resolveTheme(next) === currentResolved) {
+    idx = (idx + 1) % order.length;
+    next = order[idx];
+  }
+
   saveTheme(next);
   applyTheme(resolveTheme(next));
   return next;
