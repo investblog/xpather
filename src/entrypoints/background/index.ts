@@ -64,14 +64,28 @@ export default defineBackground(() => {
       case 'xpath:evaluate': {
         const state = getTabState(tabId);
         state.lastInput = message.xpath;
-        const result = await sendToTab(tabId, message);
+        const result = (await sendToTab(tabId, message)) as { result?: { count: number } } | null;
         sendResponse(result);
+
+        // Update toolbar badge with match count
+        const evalCount = result?.result?.count ?? 0;
+        void browser.action.setBadgeText({ text: evalCount > 0 ? String(evalCount) : '', tabId });
+        void browser.action.setBadgeBackgroundColor({
+          color: evalCount === 1 ? '#22c55e' : '#eab308',
+          tabId,
+        });
         break;
       }
 
-      case 'highlight:preview':
+      case 'highlight:preview': {
+        await sendToTab(tabId, message);
+        sendResponse({ ok: true });
+        break;
+      }
+
       case 'highlight:clear': {
         await sendToTab(tabId, message);
+        void browser.action.setBadgeText({ text: '', tabId });
         sendResponse({ ok: true });
         break;
       }

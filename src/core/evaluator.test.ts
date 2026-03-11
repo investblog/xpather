@@ -23,11 +23,12 @@ describe('evaluateXPath', () => {
     expect(result.error).toBeNull();
     expect(result.count).toBe(1);
     expect(result.nodes).toHaveLength(1);
-    expect(result.nodes[0]).toEqual({
+    expect(result.nodes[0]).toMatchObject({
       tag: 'div',
       attrs: [['id', 'test']],
       text: 'Hello',
       children: 0,
+      descendants: 0,
     });
     expect(result.truncated).toBe(false);
   });

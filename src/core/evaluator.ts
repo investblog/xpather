@@ -21,12 +21,13 @@ export function evaluateXPath(
     const result = doc.evaluate(xpath, context, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
     const total = result.snapshotLength;
     const collected = Math.min(total, cap);
-    const nodes: string[] = [];
+    const nodes: SerializedNode[] = [];
+    const expandChildren = total === 1;
 
     for (let i = 0; i < collected; i++) {
       const node = result.snapshotItem(i);
       if (node) {
-        nodes.push(serializeNode(node));
+        nodes.push(serializeNode(node, expandChildren));
       }
     }
 
@@ -71,24 +72,30 @@ export function evaluateXPathNodes(
   }
 }
 
-function serializeNode(node: Node): SerializedNode {
+function serializeNode(node: Node, expand = false): SerializedNode {
   if (node.nodeType === Node.ELEMENT_NODE) {
     const el = node as Element;
     const attrs: [string, string][] = [];
     for (const attr of el.attributes) {
       attrs.push([attr.name, attr.value.length > 80 ? `${attr.value.slice(0, 80)}…` : attr.value]);
     }
-    return {
+    const result: SerializedNode = {
       tag: el.tagName.toLowerCase(),
       attrs,
       text: el.textContent?.trim().slice(0, 120) ?? '',
       children: el.childElementCount,
+      descendants: el.querySelectorAll('*').length,
     };
+    if (expand && el.childElementCount > 0) {
+      result.childNodes = Array.from(el.children).map((c) => serializeNode(c));
+    }
+    return result;
   }
   return {
     tag: '#text',
     attrs: [],
     text: node.nodeValue?.trim().slice(0, 120) ?? '',
     children: 0,
+    descendants: 0,
   };
 }

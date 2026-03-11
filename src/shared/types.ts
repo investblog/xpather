@@ -12,6 +12,8 @@ export interface SerializedNode {
   attrs: [string, string][];
   text: string;
   children: number;
+  descendants: number;
+  childNodes?: SerializedNode[];
 }
 
 export interface XPathEvaluationResult {

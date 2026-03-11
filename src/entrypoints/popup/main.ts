@@ -98,9 +98,13 @@ async function evaluateInput(): Promise<void> {
   }
 
   hideError();
-  const countText = result.truncated ? `${result.count}+` : String(result.count);
-  matchCount.textContent = countText;
   matchCount.classList.toggle('badge--unique', result.count === 1);
+
+  if (result.count === 1 && result.nodes[0]?.descendants > 0) {
+    matchCount.textContent = `1 · ${result.nodes[0].descendants}`;
+  } else {
+    matchCount.textContent = result.truncated ? `${result.count}+` : String(result.count);
+  }
 
   renderResultTree(result.nodes);
 }
@@ -258,6 +262,13 @@ function renderResultTree(nodes: SerializedNode[]): void {
 
   for (let i = 0; i < visible.length; i++) {
     resultTree.appendChild(createNodeElement(visible[i], i));
+
+    // Expand direct children for single match
+    if (visible[i].childNodes && visible[i].childNodes.length > 0) {
+      for (const child of visible[i].childNodes) {
+        resultTree.appendChild(createNodeElement(child, -1, 1));
+      }
+    }
   }
 
   if (nodes.length > limit) {
@@ -268,31 +279,37 @@ function renderResultTree(nodes: SerializedNode[]): void {
   }
 }
 
-function createNodeElement(node: SerializedNode, index: number): HTMLElement {
+function createNodeElement(node: SerializedNode, index: number, depth = 0): HTMLElement {
   const row = document.createElement('div');
   row.className = 'result-tree__node';
+  if (depth > 0) {
+    row.classList.add('result-tree__node--child');
+    row.style.paddingLeft = `${8 + depth * 16}px`;
+  }
 
-  // Click to highlight element on page
-  row.addEventListener('click', () => {
-    const xpath = currentXPath;
-    if (!xpath) return;
+  // Click to highlight element on page (only for top-level matched nodes)
+  if (index >= 0) {
+    row.addEventListener('click', () => {
+      const xpath = currentXPath;
+      if (!xpath) return;
 
-    // Toggle selection
-    if (selectedTreeIndex === index) {
-      selectedTreeIndex = -1;
-      row.classList.remove('result-tree__node--selected');
-      void sendMessage({ type: 'highlight:clear' });
-      return;
-    }
+      // Toggle selection
+      if (selectedTreeIndex === index) {
+        selectedTreeIndex = -1;
+        row.classList.remove('result-tree__node--selected');
+        void sendMessage({ type: 'highlight:clear' });
+        return;
+      }
 
-    // Deselect previous
-    const prev = resultTree.querySelector('.result-tree__node--selected');
-    if (prev) prev.classList.remove('result-tree__node--selected');
+      // Deselect previous
+      const prev = resultTree.querySelector('.result-tree__node--selected');
+      if (prev) prev.classList.remove('result-tree__node--selected');
 
-    selectedTreeIndex = index;
-    row.classList.add('result-tree__node--selected');
-    void sendMessage({ type: 'highlight:preview', xpath, index });
-  });
+      selectedTreeIndex = index;
+      row.classList.add('result-tree__node--selected');
+      void sendMessage({ type: 'highlight:preview', xpath, index });
+    });
+  }
 
   const tagOpen = document.createElement('span');
   tagOpen.className = 'result-tree__bracket';
