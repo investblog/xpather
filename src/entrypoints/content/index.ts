@@ -17,36 +17,38 @@ export default defineContentScript({
             void browser.runtime.sendMessage({ type: 'picker:result', variants });
           });
           sendResponse({ ok: true });
-          return true;
+          break;
 
         case 'picker:stop':
           stopPicker();
           clearAllHighlights();
           sendResponse({ ok: true });
-          return true;
+          break;
 
         case 'xpath:evaluate': {
           const result = evaluateXPath(message.xpath);
           highlightMatches(message.xpath, 'matches');
           sendResponse({ type: 'xpath:result', result });
-          return true;
+          break;
         }
 
         case 'highlight:preview':
           clearChannel('preview');
           highlightMatches(message.xpath, 'preview', message.index);
           sendResponse({ ok: true });
-          return true;
+          break;
 
         case 'highlight:clear':
           clearChannel('preview');
           clearChannel('matches');
           sendResponse({ ok: true });
-          return true;
+          break;
 
         default:
-          return false;
+          break;
       }
+
+      return true;
     });
 
     // Refresh highlight positions on scroll/resize

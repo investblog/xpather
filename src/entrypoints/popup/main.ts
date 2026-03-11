@@ -4,10 +4,17 @@ import type { ExtensionMessage, StateCurrentMessage, XPathResultMessage } from '
 import { cycleTheme, initTheme } from '@shared/theme';
 import type { SerializedNode, XPathVariant } from '@shared/types';
 
+type MessageKey = Parameters<typeof browser.i18n.getMessage>[0];
+
+function getMessage(key: string): string {
+  return browser.i18n.getMessage(key as MessageKey) || key;
+}
+
 // --- i18n ---
 for (const el of document.querySelectorAll<HTMLElement>('[data-i18n]')) {
-  const key = el.dataset.i18n!;
-  const msg = browser.i18n.getMessage(key);
+  const key = el.dataset.i18n;
+  if (!key) continue;
+  const msg = getMessage(key);
   if (msg) el.textContent = msg;
 }
 
@@ -91,7 +98,7 @@ async function evaluateInput(): Promise<void> {
   const { result } = response;
 
   if (result.error) {
-    showError(browser.i18n.getMessage(result.error as keyof typeof import('@shared/types')) || result.error);
+    showError(getMessage(result.error));
     matchCount.textContent = '0';
     matchCount.classList.remove('badge--unique');
     return;
@@ -261,11 +268,13 @@ function renderResultTree(nodes: SerializedNode[]): void {
   const visible = nodes.slice(0, limit);
 
   for (let i = 0; i < visible.length; i++) {
-    resultTree.appendChild(createNodeElement(visible[i], i));
+    const node = visible[i];
+    if (!node) continue;
+    resultTree.appendChild(createNodeElement(node, i));
 
     // Expand direct children for single match
-    if (visible[i].childNodes && visible[i].childNodes.length > 0) {
-      for (const child of visible[i].childNodes) {
+    if (node.childNodes && node.childNodes.length > 0) {
+      for (const child of node.childNodes) {
         resultTree.appendChild(createNodeElement(child, -1, 1));
       }
     }
