@@ -12,7 +12,7 @@
     "message": "Variants"
   },
   "HINT_PICK": {
-    "message": "Pick mode: hover + click · Esc to cancel"
+    "message": "Alt+hover · Alt+click · Esc to cancel"
   },
   "STRATEGY_ID": {
     "message": "By ID"
@@ -72,5 +72,22 @@
   },
   "PIN_SIDE_PANEL": {
     "message": "Pin to side panel"
+  },
+  "COPY_XPATH": {
+    "message": "Copy XPath"
+  },
+  "MORE_RESULTS": {
+    "message": "… $COUNT$ more",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "RATE_EXTENSION": {
+    "message": "Rate"
+  },
+  "GITHUB": {
+    "message": "GitHub"
   }
 }

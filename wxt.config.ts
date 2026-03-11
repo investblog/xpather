@@ -5,6 +5,15 @@ export default defineConfig({
   srcDir: 'src',
   outDir: 'dist',
 
+  // Remove host_permissions and empty content_scripts added by WXT for runtime content scripts.
+  // We inject on demand via scripting.executeScript + activeTab — no <all_urls> needed.
+  hooks: {
+    'build:manifestGenerated': (_wxt, manifest) => {
+      delete (manifest as Record<string, unknown>).host_permissions;
+      delete (manifest as Record<string, unknown>).content_scripts;
+    },
+  },
+
   vite: () => ({
     resolve: {
       alias: {
@@ -23,7 +32,7 @@ export default defineConfig({
 
     permissions: [
       'activeTab',
-      'tabs',
+      'scripting',
       ...(browser !== 'firefox' && browser !== 'opera' ? (['sidePanel'] as const) : []),
     ],
 

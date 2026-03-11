@@ -10,7 +10,7 @@
   <body>
     <div class="popup">
       <header class="popup__header">
-        <h1 class="popup__title" data-i18n="EXTENSION_NAME">Xpather</h1>
+        <h1 class="popup__title"><span id="title-logo"></span> <span data-i18n="EXTENSION_NAME">Xpather</span></h1>
         <div class="popup__actions">
           <button id="btn-pick" class="btn btn--icon" title="Pick element"></button>
           <button id="btn-theme" class="btn btn--icon" title="Toggle theme"></button>
@@ -20,15 +20,19 @@
 
       <section class="popup__input-section">
         <div class="input-group">
-          <input
-            id="xpath-input"
-            type="text"
-            class="input-group__field"
-            placeholder="//div[@id=&quot;example&quot;]"
-            spellcheck="false"
-            autocomplete="off"
-          />
+          <div class="input-group__wrap">
+            <input
+              id="xpath-input"
+              type="text"
+              class="input-group__field"
+              placeholder="//div[@id=&quot;example&quot;]"
+              spellcheck="false"
+              autocomplete="off"
+            />
+            <button id="btn-clear" class="input-group__clear" type="button" aria-label="Clear"></button>
+          </div>
           <span id="match-count" class="input-group__badge">0</span>
+          <button id="btn-copy" class="btn btn--icon btn--copy" hidden></button>
         </div>
         <div id="result-tree" class="result-tree" hidden></div>
         <div id="error-message" class="error-message" hidden></div>
@@ -40,7 +44,12 @@
       </section>
 
       <footer class="popup__footer">
-        <span class="popup__hint" data-i18n="HINT_PICK">Pick mode: hover + click · Esc to cancel</span>
+        <span class="popup__hint" data-i18n="HINT_PICK">Alt+hover · Alt+click · Esc to cancel</span>
+        <span class="popup__footer-links">
+          <a id="link-rate" class="popup__link" href="#" hidden data-i18n="RATE_EXTENSION">Rate</a>
+          <a id="link-github" class="popup__link popup__link--icon" href="#" target="_blank" rel="noopener" title="GitHub"></a>
+          <a id="link-sponsor" class="popup__link popup__link--icon" href="https://301.st" target="_blank" rel="noopener" title="301.st — The Traffic Control Plane"></a>
+        </span>
       </footer>
     </div>
 

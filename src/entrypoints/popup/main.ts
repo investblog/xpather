@@ -1,8 +1,11 @@
 import { COPY_FLASH_MS, DEBOUNCE_MS } from '@shared/constants';
-import { svgIcon } from '@shared/icons';
+import { brandIcon, logoIcon, svgIcon } from '@shared/icons';
 import type { ExtensionMessage, StateCurrentMessage, XPathResultMessage } from '@shared/messaging/protocol';
+import { getStoreInfo } from '@shared/store-links';
 import { cycleTheme, initTheme } from '@shared/theme';
 import type { SerializedNode, XPathVariant } from '@shared/types';
+
+const GITHUB_URL = 'https://github.com/nicksulkers/xpather';
 
 type MessageKey = Parameters<typeof browser.i18n.getMessage>[0];
 
@@ -35,11 +38,35 @@ const variantList = document.getElementById('variant-list')!;
 const btnPick = document.getElementById('btn-pick')!;
 const btnTheme = document.getElementById('btn-theme')!;
 const btnPin = document.getElementById('btn-pin')!;
+const btnCopy = document.getElementById('btn-copy')!;
+const btnClear = document.getElementById('btn-clear')!;
+const inputWrap = xpathInput.parentElement!;
+const linkRate = document.getElementById('link-rate') as HTMLAnchorElement;
+const linkGithub = document.getElementById('link-github') as HTMLAnchorElement;
+const linkSponsor = document.getElementById('link-sponsor') as HTMLAnchorElement;
 
-// --- Button icons ---
+// --- Logo + button icons ---
+document.getElementById('title-logo')!.appendChild(logoIcon(18));
 btnPick.appendChild(svgIcon('cursorClick'));
 btnTheme.appendChild(svgIcon('brightness'));
 btnPin.appendChild(svgIcon('dockRight'));
+btnCopy.appendChild(svgIcon('copy'));
+btnClear.appendChild(svgIcon('close', 14));
+
+// --- Button titles via i18n ---
+btnTheme.title = getMessage('TOGGLE_THEME');
+btnPin.title = getMessage('PIN_SIDE_PANEL');
+btnCopy.title = getMessage('COPY_XPATH');
+
+// --- Footer links ---
+const storeInfo = getStoreInfo();
+if (storeInfo) {
+  linkRate.href = storeInfo.url;
+  linkRate.hidden = false;
+}
+linkGithub.href = GITHUB_URL;
+linkGithub.appendChild(brandIcon('github', 14));
+linkSponsor.appendChild(brandIcon('301', 14));
 
 // --- Side panel layout ---
 if (isSidePanel) {
@@ -55,6 +82,7 @@ async function loadState(): Promise<void> {
   const { lastInput, lastVariants, pickerActive: isActive } = response.state;
   if (lastInput) {
     xpathInput.value = lastInput;
+    updateInputControls();
   }
   if (lastVariants.length > 0) {
     renderVariants(lastVariants);
@@ -64,8 +92,31 @@ async function loadState(): Promise<void> {
 
 void loadState();
 
+// --- Copy current XPath ---
+btnCopy.addEventListener('click', () => {
+  const xpath = xpathInput.value.trim();
+  if (!xpath) return;
+  void copyToClipboard(xpath, btnCopy);
+});
+
+function updateInputControls(): void {
+  const hasValue = xpathInput.value.trim().length > 0;
+  btnCopy.hidden = !hasValue;
+  inputWrap.classList.toggle('has-value', hasValue);
+}
+
+// --- Clear input ---
+btnClear.addEventListener('click', () => {
+  xpathInput.value = '';
+  updateInputControls();
+  clearResults();
+  void sendMessage({ type: 'highlight:clear' });
+  xpathInput.focus();
+});
+
 // --- XPath input ---
 xpathInput.addEventListener('input', () => {
+  updateInputControls();
   if (debounceTimer) clearTimeout(debounceTimer);
   debounceTimer = setTimeout(() => void evaluateInput(), DEBOUNCE_MS);
 });
@@ -169,6 +220,7 @@ function renderVariants(variants: XPathVariant[]): void {
       // Also put it in the input field
       xpathInput.value = variant.xpath;
       currentXPath = variant.xpath;
+      updateInputControls();
     });
 
     // Hover to preview (side panel only)
@@ -283,7 +335,9 @@ function renderResultTree(nodes: SerializedNode[]): void {
   if (nodes.length > limit) {
     const more = document.createElement('div');
     more.className = 'result-tree__more';
-    more.textContent = `… ${nodes.length - limit} more`;
+    const remaining = nodes.length - limit;
+    const template = getMessage('MORE_RESULTS');
+    more.textContent = template.includes('$') ? template.replace('$COUNT$', String(remaining)) : `… ${remaining} more`;
     resultTree.appendChild(more);
   }
 }
@@ -394,8 +448,9 @@ function hideError(): void {
 async function copyToClipboard(text: string, element: HTMLElement): Promise<void> {
   try {
     await navigator.clipboard.writeText(text);
-    element.classList.add('variant-list__item--copied');
-    setTimeout(() => element.classList.remove('variant-list__item--copied'), COPY_FLASH_MS);
+    const flashClass = element.classList.contains('btn--copy') ? 'btn--copied' : 'variant-list__item--copied';
+    element.classList.add(flashClass);
+    setTimeout(() => element.classList.remove(flashClass), COPY_FLASH_MS);
   } catch {
     // Fallback: select text
   }

@@ -51,6 +51,9 @@ body.sidepanel .popup__variants {
 }
 
 .popup__title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   font-size: 14px;
   font-weight: 600;
 }
@@ -108,9 +111,15 @@ body.sidepanel .popup__variants {
   gap: 6px;
 }
 
-.input-group__field {
+.input-group__wrap {
+  position: relative;
   flex: 1;
-  padding: 6px 8px;
+  display: flex;
+}
+
+.input-group__field {
+  width: 100%;
+  padding: 6px 26px 6px 8px;
   font-family: 'Consolas', 'Menlo', monospace;
   font-size: 12px;
   color: var(--text-primary);
@@ -128,6 +137,34 @@ body.sidepanel .popup__variants {
 .input-group__field.input--error {
   border-color: var(--error);
   background: var(--error-bg);
+}
+
+.input-group__clear {
+  position: absolute;
+  inset-inline-end: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: none;
+  border-radius: 3px;
+  background: transparent;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s;
+}
+
+.input-group__clear:hover {
+  color: var(--text-primary);
+  background: var(--bg-tertiary);
+}
+
+.input-group__wrap.has-value .input-group__clear {
+  display: inline-flex;
 }
 
 .input-group__badge {
@@ -338,12 +375,24 @@ body.sidepanel .popup__variants {
   background: var(--badge-unique-bg);
 }
 
+/* --- Copy button --- */
+
+.btn--copy {
+  flex-shrink: 0;
+}
+
+.btn--copied {
+  background: var(--success-bg);
+  color: var(--success);
+  border-color: var(--success);
+}
+
 /* --- Footer --- */
 
 .popup__footer {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   padding: 6px 12px;
   border-top: 1px solid var(--border);
 }
@@ -351,4 +400,31 @@ body.sidepanel .popup__variants {
 .popup__hint {
   font-size: 10px;
   color: var(--text-tertiary);
+}
+
+.popup__footer-links {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.popup__link {
+  font-size: 10px;
+  color: var(--text-tertiary);
+  text-decoration: none;
+  transition: color 0.15s, opacity 0.15s;
+}
+
+.popup__link:hover {
+  color: var(--accent);
+}
+
+.popup__link--icon {
+  display: inline-flex;
+  align-items: center;
+  opacity: 0.5;
+}
+
+.popup__link--icon:hover {
+  opacity: 1;
 }

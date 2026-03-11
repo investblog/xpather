@@ -3,6 +3,7 @@ import type { TabState } from '@shared/types';
 
 export default defineBackground(() => {
   const tabStates = new Map<number, TabState>();
+  const injectedTabs = new Set<number>();
 
   function getTabState(tabId: number): TabState {
     let state = tabStates.get(tabId);
@@ -16,6 +17,20 @@ export default defineBackground(() => {
   function isScriptableUrl(url: string | undefined): boolean {
     if (!url) return false;
     return url.startsWith('http://') || url.startsWith('https://');
+  }
+
+  async function ensureContentScript(tabId: number): Promise<boolean> {
+    if (injectedTabs.has(tabId)) return true;
+    try {
+      await browser.scripting.executeScript({
+        target: { tabId },
+        files: ['content-scripts/content.js'] as unknown as string[],
+      });
+      injectedTabs.add(tabId);
+      return true;
+    } catch {
+      return false;
+    }
   }
 
   // Handle messages from popup/sidepanel
@@ -117,6 +132,7 @@ export default defineBackground(() => {
   }
 
   async function sendToTab(tabId: number, message: ExtensionMessage): Promise<unknown> {
+    if (!(await ensureContentScript(tabId))) return null;
     try {
       return await browser.tabs.sendMessage(tabId, message);
     } catch {
@@ -144,12 +160,14 @@ export default defineBackground(() => {
   // Cleanup on tab close
   browser.tabs.onRemoved.addListener((tabId) => {
     tabStates.delete(tabId);
+    injectedTabs.delete(tabId);
   });
 
   // Cleanup on navigation
   browser.webNavigation?.onCommitted.addListener(({ tabId, frameId }) => {
     if (frameId === 0) {
       tabStates.delete(tabId);
+      injectedTabs.delete(tabId);
       void browser.action.setBadgeText({ text: '', tabId });
     }
   });
