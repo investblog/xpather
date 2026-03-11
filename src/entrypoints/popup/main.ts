@@ -3,6 +3,13 @@ import type { ExtensionMessage, StateCurrentMessage, XPathResultMessage } from '
 import { cycleTheme, initTheme } from '@shared/theme';
 import type { SerializedNode, XPathVariant } from '@shared/types';
 
+// --- i18n ---
+for (const el of document.querySelectorAll<HTMLElement>('[data-i18n]')) {
+  const key = el.dataset.i18n!;
+  const msg = browser.i18n.getMessage(key);
+  if (msg) el.textContent = msg;
+}
+
 let currentTheme = initTheme();
 let debounceTimer: ReturnType<typeof setTimeout> | null = null;
 let currentXPath = '';

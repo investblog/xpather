@@ -3,55 +3,55 @@
     "message": "XPath Helper"
   },
   "EXTENSION_DESCRIPTION": {
-    "message": "Поиск, генерация и тестирование XPath-выражений. Несколько вариантов с ранжированием, выбор элемента, без телеметрии."
+    "message": "Find, generate, and test XPath expressions. Multiple ranked variants, element picker, zero telemetry."
   },
   "COMMAND_TOGGLE_PICKER": {
-    "message": "Включить/выключить выбор элемента"
+    "message": "Toggle element picker"
   },
   "VARIANTS_TITLE": {
-    "message": "Варианты"
+    "message": "Variants"
   },
   "HINT_PICK": {
-    "message": "Режим выбора: наведи + клик · Esc для отмены"
+    "message": "Pick mode: hover + click · Esc to cancel"
   },
   "STRATEGY_ID": {
-    "message": "По ID"
+    "message": "By ID"
   },
   "STRATEGY_DATA_ATTR": {
-    "message": "По data-*"
+    "message": "By data-*"
   },
   "STRATEGY_ATTRIBUTE": {
-    "message": "По атрибуту"
+    "message": "By attribute"
   },
   "STRATEGY_TEXT": {
-    "message": "По тексту"
+    "message": "By text"
   },
   "STRATEGY_CLASS": {
-    "message": "По классу"
+    "message": "By class"
   },
   "STRATEGY_OPTIMIZED": {
-    "message": "Кратчайший путь"
+    "message": "Shortest path"
   },
   "STRATEGY_ABSOLUTE": {
-    "message": "Абсолютный путь"
+    "message": "Absolute path"
   },
   "BEST_VARIANT": {
-    "message": "лучший"
+    "message": "best"
   },
   "COPY_SUCCESS": {
-    "message": "Скопировано!"
+    "message": "Copied!"
   },
   "INVALID_XPATH": {
-    "message": "Некорректное XPath-выражение"
+    "message": "Invalid XPath expression"
   },
   "UNSUPPORTED_RESULT_TYPE": {
-    "message": "Поддерживаются только результаты узлов"
+    "message": "Only node results are supported"
   },
   "TOO_MANY_MATCHES": {
-    "message": "Слишком много совпадений (результат обрезан)"
+    "message": "Too many matches (result truncated)"
   },
   "MATCHES_COUNT": {
-    "message": "$COUNT$ совпадений",
+    "message": "$COUNT$ matches",
     "placeholders": {
       "count": {
         "content": "$1"
@@ -59,18 +59,18 @@
     }
   },
   "UNIQUE_MATCH": {
-    "message": "Уникальное совпадение"
+    "message": "Unique match"
   },
   "PICK_ELEMENT": {
-    "message": "Выбрать элемент"
+    "message": "Pick element"
   },
   "PICK_ELEMENT_STOP": {
-    "message": "Остановить выбор"
+    "message": "Stop picker"
   },
   "TOGGLE_THEME": {
-    "message": "Переключить тему"
+    "message": "Toggle theme"
   },
   "PIN_SIDE_PANEL": {
-    "message": "Закрепить в боковой панели"
+    "message": "Pin to side panel"
   }
 }
