@@ -1,7 +1,7 @@
 {
-  "name": "xpath-helper",
+  "name": "xpather",
   "version": "1.0.0",
-  "description": "Find, generate, and test XPath expressions. Multiple ranked variants, element picker, zero telemetry.",
+  "description": "Find, generate and test XPath expressions. Smart variants, element picker, zero telemetry.",
   "type": "module",
   "scripts": {
     "dev": "wxt",

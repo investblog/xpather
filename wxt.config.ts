@@ -75,7 +75,7 @@ export default defineConfig({
     ...(browser === 'firefox' && {
       browser_specific_settings: {
         gecko: {
-          id: 'xpath-helper@xpath-helper.com',
+          id: 'xpather@xpather.dev',
           strict_min_version: '142.0',
         },
       },

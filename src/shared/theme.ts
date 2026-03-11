@@ -1,6 +1,6 @@
 type Theme = 'light' | 'dark' | 'system';
 
-const STORAGE_KEY = 'xpath_helper_theme';
+const STORAGE_KEY = 'xpather_theme';
 
 function getSystemPreference(): 'light' | 'dark' {
   return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
