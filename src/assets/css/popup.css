@@ -306,12 +306,9 @@ body.sidepanel .popup__variants {
 }
 
 .variant-list__best {
-  font-size: 9px;
-  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
   color: var(--badge-unique-text);
-  background: var(--badge-unique-bg);
-  padding: 1px 5px;
-  border-radius: 3px;
   flex-shrink: 0;
 }
 

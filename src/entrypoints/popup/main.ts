@@ -1,4 +1,5 @@
 import { COPY_FLASH_MS, DEBOUNCE_MS } from '@shared/constants';
+import { svgIcon } from '@shared/icons';
 import type { ExtensionMessage, StateCurrentMessage, XPathResultMessage } from '@shared/messaging/protocol';
 import { cycleTheme, initTheme } from '@shared/theme';
 import type { SerializedNode, XPathVariant } from '@shared/types';
@@ -27,6 +28,11 @@ const variantList = document.getElementById('variant-list')!;
 const btnPick = document.getElementById('btn-pick')!;
 const btnTheme = document.getElementById('btn-theme')!;
 const btnPin = document.getElementById('btn-pin')!;
+
+// --- Button icons ---
+btnPick.appendChild(svgIcon('cursorClick'));
+btnTheme.appendChild(svgIcon('brightness'));
+btnPin.appendChild(svgIcon('dockRight'));
 
 // --- Side panel layout ---
 if (isSidePanel) {
@@ -116,11 +122,12 @@ function renderVariants(variants: XPathVariant[]): void {
     const li = document.createElement('li');
     li.className = 'variant-list__item';
 
-    // "Best" badge for first unique match
+    // Star icon for first unique match
     if (i === bestIndex) {
       const best = document.createElement('span');
       best.className = 'variant-list__best';
-      best.textContent = browser.i18n.getMessage('BEST_VARIANT') || 'best';
+      best.appendChild(svgIcon('star', 12));
+      best.title = browser.i18n.getMessage('BEST_VARIANT') || 'best';
       li.appendChild(best);
     }
 
