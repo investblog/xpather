@@ -12,9 +12,24 @@
       <header class="popup__header">
         <h1 class="popup__title"><span id="title-logo"></span> <span data-i18n="EXTENSION_NAME">Xpather</span></h1>
         <div class="popup__actions">
-          <button id="btn-pick" class="btn btn--icon" title="Pick element"></button>
-          <button id="btn-theme" class="btn btn--icon" title="Toggle theme"></button>
-          <button id="btn-pin" class="btn btn--icon" title="Pin to side panel"></button>
+          <button
+            id="btn-pick"
+            class="btn btn--icon"
+            data-i18n-title="PICK_ELEMENT"
+            data-i18n-aria-label="PICK_ELEMENT"
+          ></button>
+          <button
+            id="btn-theme"
+            class="btn btn--icon"
+            data-i18n-title="TOGGLE_THEME"
+            data-i18n-aria-label="TOGGLE_THEME"
+          ></button>
+          <button
+            id="btn-pin"
+            class="btn btn--icon"
+            data-i18n-title="PIN_SIDE_PANEL"
+            data-i18n-aria-label="PIN_SIDE_PANEL"
+          ></button>
         </div>
       </header>
 
@@ -25,15 +40,30 @@
               id="xpath-input"
               type="text"
               class="input-group__field"
-              placeholder="//div[@id=&quot;example&quot;]"
+              placeholder=""
               spellcheck="false"
               autocomplete="off"
+              data-i18n-placeholder="XPATH_PLACEHOLDER"
+              data-i18n-aria-label="XPATH_INPUT_LABEL"
             />
-            <button id="btn-clear" class="input-group__clear" type="button" aria-label="Clear"></button>
+            <button
+              id="btn-clear"
+              class="input-group__clear"
+              type="button"
+              data-i18n-title="CLEAR_INPUT"
+              data-i18n-aria-label="CLEAR_INPUT"
+            ></button>
           </div>
           <span id="match-count" class="input-group__badge">0</span>
-          <button id="btn-copy" class="btn btn--icon btn--copy" hidden></button>
+          <button
+            id="btn-copy"
+            class="btn btn--icon btn--copy"
+            hidden
+            data-i18n-title="COPY_XPATH"
+            data-i18n-aria-label="COPY_XPATH"
+          ></button>
         </div>
+        <div id="result-summary" class="result-summary" hidden aria-live="polite"></div>
         <div id="result-tree" class="result-tree" hidden></div>
         <div id="error-message" class="error-message" hidden></div>
       </section>
@@ -44,11 +74,25 @@
       </section>
 
       <footer class="popup__footer">
-        <span class="popup__hint" data-i18n="HINT_PICK">Alt+hover · Alt+click · Esc to cancel</span>
+        <span class="popup__hint" data-i18n="HINT_PICK">Alt+hover / Alt+click / Esc to cancel</span>
         <span class="popup__footer-links">
           <a id="link-rate" class="popup__link" href="#" hidden data-i18n="RATE_EXTENSION">Rate</a>
-          <a id="link-github" class="popup__link popup__link--icon" href="#" target="_blank" rel="noopener" title="GitHub"></a>
-          <a id="link-sponsor" class="popup__link popup__link--icon" href="https://301.st" target="_blank" rel="noopener" title="301.st — The Traffic Control Plane"></a>
+          <a
+            id="link-github"
+            class="popup__link popup__link--icon"
+            href="#"
+            target="_blank"
+            rel="noopener"
+            data-i18n-title="GITHUB"
+          ></a>
+          <a
+            id="link-sponsor"
+            class="popup__link popup__link--icon"
+            href="https://301.st"
+            target="_blank"
+            rel="noopener"
+            data-i18n-title="SPONSOR_TITLE"
+          ></a>
         </span>
       </footer>
     </div>

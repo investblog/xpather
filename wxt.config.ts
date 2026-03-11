@@ -6,11 +6,15 @@ export default defineConfig({
   outDir: 'dist',
 
   // Remove host_permissions and empty content_scripts added by WXT for runtime content scripts.
-  // We inject on demand via scripting.executeScript + activeTab — no <all_urls> needed.
+  // We inject on demand via scripting.executeScript + activeTab - no <all_urls> needed.
   hooks: {
     'build:manifestGenerated': (_wxt, manifest) => {
-      delete (manifest as Record<string, unknown>).host_permissions;
-      delete (manifest as Record<string, unknown>).content_scripts;
+      const mutableManifest = manifest as unknown as {
+        host_permissions?: unknown;
+        content_scripts?: unknown;
+      };
+      delete mutableManifest.host_permissions;
+      delete mutableManifest.content_scripts;
     },
   },
 

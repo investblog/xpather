@@ -12,7 +12,7 @@
     "message": "Variants"
   },
   "HINT_PICK": {
-    "message": "Alt+hover · Alt+click · Esc to cancel"
+    "message": "Alt+hover / Alt+click / Esc to cancel"
   },
   "STRATEGY_ID": {
     "message": "By ID"
@@ -36,7 +36,7 @@
     "message": "Absolute path"
   },
   "BEST_VARIANT": {
-    "message": "best"
+    "message": "Best"
   },
   "COPY_SUCCESS": {
     "message": "Copied!"
@@ -76,8 +76,17 @@
   "COPY_XPATH": {
     "message": "Copy XPath"
   },
+  "CLEAR_INPUT": {
+    "message": "Clear input"
+  },
+  "XPATH_INPUT_LABEL": {
+    "message": "XPath expression"
+  },
+  "XPATH_PLACEHOLDER": {
+    "message": "//div[@id=\"example\"]"
+  },
   "MORE_RESULTS": {
-    "message": "… $COUNT$ more",
+    "message": "... $COUNT$ more",
     "placeholders": {
       "count": {
         "content": "$1"
@@ -89,5 +98,33 @@
   },
   "GITHUB": {
     "message": "GitHub"
+  },
+  "SPONSOR_TITLE": {
+    "message": "301.st - The Traffic Control Plane"
+  },
+  "FIRST_MATCH_SUMMARY": {
+    "message": "First match: $NODE$",
+    "placeholders": {
+      "node": {
+        "content": "$1"
+      }
+    }
+  },
+  "MATCHES_PREVIEW_SUMMARY": {
+    "message": "$COUNT$ matches, first: $NODE$",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      },
+      "node": {
+        "content": "$2"
+      }
+    }
+  },
+  "NODE_NO_TEXT": {
+    "message": "no text"
+  },
+  "PICKER_TOAST": {
+    "message": "Hold Alt + hover to highlight / Alt + click to select / Esc to cancel"
   }
 }

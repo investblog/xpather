@@ -11,6 +11,12 @@ const HIGHLIGHT_STYLE = '2px solid #22c55e';
 const HIGHLIGHT_ATTR = 'data-xh-picker-highlight';
 const TOAST_TIMEOUT = 3500;
 
+type MessageKey = Parameters<typeof browser.i18n.getMessage>[0];
+
+function getMessage(key: string): string {
+  return browser.i18n.getMessage(key as MessageKey) || key;
+}
+
 export function startPicker(callback: (variants: XPathVariant[]) => void): void {
   if (active) return;
   active = true;
@@ -43,13 +49,12 @@ export function isPickerActive(): boolean {
 function handleMouseMove(e: MouseEvent): void {
   if (!active) return;
 
-  // Only highlight when Alt is held — page interactions pass through otherwise
+  // Only highlight when Alt is held - page interactions pass through otherwise.
   if (!e.altKey) {
     if (currentHighlight) clearPickerHighlight();
     return;
   }
 
-  // Dismiss toast on first Alt+hover interaction
   if (toastEl) dismissToast();
 
   const target = e.target;
@@ -125,9 +130,8 @@ function showPickerToast(): void {
     opacity: 0;
     transition: opacity 0.2s;
   `;
-  el.textContent = 'Hold Alt + hover to highlight \u00b7 Alt + click to select \u00b7 Esc to cancel';
+  el.textContent = getMessage('PICKER_TOAST');
   document.body.appendChild(el);
-  // Force reflow then fade in
   el.offsetHeight;
   el.style.opacity = '1';
   toastEl = el;

@@ -6,20 +6,47 @@ import { cycleTheme, initTheme } from '@shared/theme';
 import type { SerializedNode, XPathVariant } from '@shared/types';
 
 const GITHUB_URL = 'https://github.com/nicksulkers/xpather';
+const NODE_TEXT_MAX_LENGTH = 40;
+const ATTR_VALUE_MAX_LENGTH = 24;
 
 type MessageKey = Parameters<typeof browser.i18n.getMessage>[0];
+type MessageSubstitutions = Parameters<typeof browser.i18n.getMessage>[1];
 
-function getMessage(key: string): string {
-  return browser.i18n.getMessage(key as MessageKey) || key;
+function getMessage(key: string, substitutions?: MessageSubstitutions): string {
+  return browser.i18n.getMessage(key as MessageKey, substitutions) || key;
 }
 
-// --- i18n ---
-for (const el of document.querySelectorAll<HTMLElement>('[data-i18n]')) {
-  const key = el.dataset.i18n;
-  if (!key) continue;
-  const msg = getMessage(key);
-  if (msg) el.textContent = msg;
+function applyI18n(): void {
+  document.title = getMessage('EXTENSION_NAME');
+
+  for (const el of document.querySelectorAll<HTMLElement>('[data-i18n]')) {
+    const key = el.dataset.i18n;
+    if (!key) continue;
+    el.textContent = getMessage(key);
+  }
+
+  for (const el of document.querySelectorAll<HTMLElement>('[data-i18n-title]')) {
+    const key = el.dataset.i18nTitle;
+    if (!key) continue;
+    el.title = getMessage(key);
+  }
+
+  for (const el of document.querySelectorAll<HTMLElement>('[data-i18n-aria-label]')) {
+    const key = el.dataset.i18nAriaLabel;
+    if (!key) continue;
+    el.setAttribute('aria-label', getMessage(key));
+  }
+
+  for (const el of document.querySelectorAll<HTMLElement>('[data-i18n-placeholder]')) {
+    const key = el.dataset.i18nPlaceholder;
+    if (!key) continue;
+    if (el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement) {
+      el.placeholder = getMessage(key);
+    }
+  }
 }
+
+applyI18n();
 
 let currentTheme = initTheme();
 let debounceTimer: ReturnType<typeof setTimeout> | null = null;
@@ -30,33 +57,29 @@ const isSidePanel = new URLSearchParams(window.location.search).has('sidepanel')
 
 // --- DOM references ---
 const xpathInput = document.getElementById('xpath-input') as HTMLInputElement;
-const matchCount = document.getElementById('match-count')!;
-const resultTree = document.getElementById('result-tree')!;
-const errorMessage = document.getElementById('error-message')!;
-const variantsSection = document.getElementById('variants-section')!;
-const variantList = document.getElementById('variant-list')!;
-const btnPick = document.getElementById('btn-pick')!;
-const btnTheme = document.getElementById('btn-theme')!;
-const btnPin = document.getElementById('btn-pin')!;
-const btnCopy = document.getElementById('btn-copy')!;
-const btnClear = document.getElementById('btn-clear')!;
-const inputWrap = xpathInput.parentElement!;
+const matchCount = document.getElementById('match-count') as HTMLElement;
+const resultSummary = document.getElementById('result-summary') as HTMLElement;
+const resultTree = document.getElementById('result-tree') as HTMLElement;
+const errorMessage = document.getElementById('error-message') as HTMLElement;
+const variantsSection = document.getElementById('variants-section') as HTMLElement;
+const variantList = document.getElementById('variant-list') as HTMLElement;
+const btnPick = document.getElementById('btn-pick') as HTMLButtonElement;
+const btnTheme = document.getElementById('btn-theme') as HTMLButtonElement;
+const btnPin = document.getElementById('btn-pin') as HTMLButtonElement;
+const btnCopy = document.getElementById('btn-copy') as HTMLButtonElement;
+const btnClear = document.getElementById('btn-clear') as HTMLButtonElement;
+const inputWrap = xpathInput.parentElement as HTMLElement;
 const linkRate = document.getElementById('link-rate') as HTMLAnchorElement;
 const linkGithub = document.getElementById('link-github') as HTMLAnchorElement;
 const linkSponsor = document.getElementById('link-sponsor') as HTMLAnchorElement;
 
 // --- Logo + button icons ---
-document.getElementById('title-logo')!.appendChild(logoIcon(18));
+document.getElementById('title-logo')?.appendChild(logoIcon(18));
 btnPick.appendChild(svgIcon('cursorClick'));
 btnTheme.appendChild(svgIcon('brightness'));
 btnPin.appendChild(svgIcon('dockRight'));
 btnCopy.appendChild(svgIcon('copy'));
 btnClear.appendChild(svgIcon('close', 14));
-
-// --- Button titles via i18n ---
-btnTheme.title = getMessage('TOGGLE_THEME');
-btnPin.title = getMessage('PIN_SIDE_PANEL');
-btnCopy.title = getMessage('COPY_XPATH');
 
 // --- Footer links ---
 const storeInfo = getStoreInfo();
@@ -74,6 +97,12 @@ if (isSidePanel) {
   btnPin.hidden = true;
 }
 
+setPickerState(false);
+updateInputControls();
+window.addEventListener('pagehide', () => {
+  void clearAllHighlights();
+});
+
 // --- Init: load state from background ---
 async function loadState(): Promise<void> {
   const response = (await browser.runtime.sendMessage({ type: 'state:get' })) as StateCurrentMessage;
@@ -82,6 +111,7 @@ async function loadState(): Promise<void> {
   const { lastInput, lastVariants, pickerActive: isActive } = response.state;
   if (lastInput) {
     xpathInput.value = lastInput;
+    currentXPath = lastInput;
     updateInputControls();
   }
   if (lastVariants.length > 0) {
@@ -108,9 +138,10 @@ function updateInputControls(): void {
 // --- Clear input ---
 btnClear.addEventListener('click', () => {
   xpathInput.value = '';
+  currentXPath = '';
   updateInputControls();
   clearResults();
-  void sendMessage({ type: 'highlight:clear' });
+  void clearAllHighlights();
   xpathInput.focus();
 });
 
@@ -125,8 +156,10 @@ xpathInput.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') {
     if (xpathInput.value) {
       xpathInput.value = '';
+      currentXPath = '';
+      updateInputControls();
       clearResults();
-      void sendMessage({ type: 'highlight:clear' });
+      void clearAllHighlights();
     } else {
       xpathInput.blur();
     }
@@ -139,31 +172,30 @@ async function evaluateInput(): Promise<void> {
 
   if (!xpath) {
     clearResults();
-    await sendMessage({ type: 'highlight:clear' });
+    await clearAllHighlights();
     return;
   }
 
+  await clearPreviewHighlights();
   const response = (await sendMessage({ type: 'xpath:evaluate', xpath })) as XPathResultMessage | null;
   if (!response?.result) return;
 
   const { result } = response;
 
   if (result.error) {
+    clearResultPreview();
     showError(getMessage(result.error));
     matchCount.textContent = '0';
     matchCount.classList.remove('badge--unique');
+    await clearAllHighlights();
     return;
   }
 
   hideError();
   matchCount.classList.toggle('badge--unique', result.count === 1);
+  matchCount.textContent = result.truncated ? `${result.count}+` : String(result.count);
 
-  if (result.count === 1 && result.nodes[0]?.descendants > 0) {
-    matchCount.textContent = `1 · ${result.nodes[0].descendants}`;
-  } else {
-    matchCount.textContent = result.truncated ? `${result.count}+` : String(result.count);
-  }
-
+  renderResultSummary(result.nodes, result.count, result.truncated);
   renderResultTree(result.nodes);
 }
 
@@ -184,19 +216,17 @@ function renderVariants(variants: XPathVariant[]): void {
     const li = document.createElement('li');
     li.className = 'variant-list__item';
 
-    // Star icon for first unique match
     if (i === bestIndex) {
       const best = document.createElement('span');
       best.className = 'variant-list__best';
       best.appendChild(svgIcon('star', 12));
-      best.title = browser.i18n.getMessage('BEST_VARIANT') || 'best';
+      best.title = getMessage('BEST_VARIANT');
       li.appendChild(best);
     }
 
     const strategySpan = document.createElement('span');
     strategySpan.className = 'variant-list__strategy';
-    strategySpan.textContent =
-      browser.i18n.getMessage(variant.label as keyof typeof import('@shared/types')) || variant.strategy;
+    strategySpan.textContent = getMessage(variant.label);
 
     const xpathSpan = document.createElement('span');
     xpathSpan.className = 'variant-list__xpath';
@@ -212,24 +242,21 @@ function renderVariants(variants: XPathVariant[]): void {
     li.appendChild(xpathSpan);
     li.appendChild(badge);
 
-    // Click: copy + highlight on page
     li.addEventListener('click', () => {
       void copyToClipboard(variant.xpath, li);
-      void sendMessage({ type: 'highlight:preview', xpath: variant.xpath });
-
-      // Also put it in the input field
       xpathInput.value = variant.xpath;
       currentXPath = variant.xpath;
       updateInputControls();
+      void clearPreviewHighlights();
+      void evaluateInput();
     });
 
-    // Hover to preview (side panel only)
     if (isSidePanel) {
       li.addEventListener('mouseenter', () => {
         void sendMessage({ type: 'highlight:preview', xpath: variant.xpath });
       });
       li.addEventListener('mouseleave', () => {
-        void sendMessage({ type: 'highlight:clear' });
+        void clearPreviewHighlights();
       });
     }
 
@@ -247,7 +274,6 @@ btnPick.addEventListener('click', () => {
     setPickerState(true);
 
     if (!isSidePanel) {
-      // Popup will close when user clicks page — that's expected
       window.close();
     }
   }
@@ -256,12 +282,12 @@ btnPick.addEventListener('click', () => {
 function setPickerState(active: boolean): void {
   pickerActive = active;
   btnPick.classList.toggle('btn--active', active);
-  btnPick.title = active
-    ? browser.i18n.getMessage('PICK_ELEMENT_STOP') || 'Stop picker'
-    : browser.i18n.getMessage('PICK_ELEMENT') || 'Pick element';
+  const label = active ? getMessage('PICK_ELEMENT_STOP') : getMessage('PICK_ELEMENT');
+  btnPick.title = label;
+  btnPick.setAttribute('aria-label', label);
 }
 
-// Listen for picker results and state changes
+// Listen for picker results and state changes.
 browser.runtime.onMessage.addListener((raw: unknown) => {
   const message = raw as ExtensionMessage;
   if (message.type === 'picker:result') {
@@ -278,7 +304,6 @@ btnTheme.addEventListener('click', () => {
 // --- Pin to side panel ---
 btnPin.addEventListener('click', async () => {
   try {
-    // Use native chrome.sidePanel — webextension-polyfill doesn't bridge this API
     const chromeGlobal = globalThis as unknown as {
       chrome?: {
         sidePanel?: { open: (opts: { windowId: number }) => Promise<void> };
@@ -297,14 +322,29 @@ btnPin.addEventListener('click', async () => {
       await sidebarAction.open();
     }
   } catch {
-    // API not available — hide button
     btnPin.hidden = true;
   }
 });
 
-// --- Result tree ---
+// --- Result preview ---
 const TREE_MAX_POPUP = 3;
 const TREE_MAX_SIDEPANEL = 50;
+
+function renderResultSummary(nodes: SerializedNode[], count: number, truncated: boolean): void {
+  if (nodes.length === 0) {
+    resultSummary.hidden = true;
+    resultSummary.textContent = '';
+    return;
+  }
+
+  const descriptor = describeNode(nodes[0]);
+  const countLabel = truncated ? `${count}+` : String(count);
+  resultSummary.textContent =
+    count > 1 || truncated
+      ? getMessage('MATCHES_PREVIEW_SUMMARY', [countLabel, descriptor])
+      : getMessage('FIRST_MATCH_SUMMARY', descriptor);
+  resultSummary.hidden = false;
+}
 
 function renderResultTree(nodes: SerializedNode[]): void {
   resultTree.innerHTML = '';
@@ -324,7 +364,6 @@ function renderResultTree(nodes: SerializedNode[]): void {
     if (!node) continue;
     resultTree.appendChild(createNodeElement(node, i));
 
-    // Expand direct children for single match
     if (node.childNodes && node.childNodes.length > 0) {
       for (const child of node.childNodes) {
         resultTree.appendChild(createNodeElement(child, -1, 1));
@@ -335,9 +374,7 @@ function renderResultTree(nodes: SerializedNode[]): void {
   if (nodes.length > limit) {
     const more = document.createElement('div');
     more.className = 'result-tree__more';
-    const remaining = nodes.length - limit;
-    const template = getMessage('MORE_RESULTS');
-    more.textContent = template.includes('$') ? template.replace('$COUNT$', String(remaining)) : `… ${remaining} more`;
+    more.textContent = getMessage('MORE_RESULTS', String(nodes.length - limit));
     resultTree.appendChild(more);
   }
 }
@@ -350,21 +387,18 @@ function createNodeElement(node: SerializedNode, index: number, depth = 0): HTML
     row.style.paddingLeft = `${8 + depth * 16}px`;
   }
 
-  // Click to highlight element on page (only for top-level matched nodes)
   if (index >= 0) {
     row.addEventListener('click', () => {
       const xpath = currentXPath;
       if (!xpath) return;
 
-      // Toggle selection
       if (selectedTreeIndex === index) {
         selectedTreeIndex = -1;
         row.classList.remove('result-tree__node--selected');
-        void sendMessage({ type: 'highlight:clear' });
+        void clearPreviewHighlights();
         return;
       }
 
-      // Deselect previous
       const prev = resultTree.querySelector('.result-tree__node--selected');
       if (prev) prev.classList.remove('result-tree__node--selected');
 
@@ -413,7 +447,7 @@ function createNodeElement(node: SerializedNode, index: number, depth = 0): HTML
   if (node.text && node.children === 0) {
     const text = document.createElement('span');
     text.className = 'result-tree__text';
-    text.textContent = node.text.length > 40 ? `${node.text.slice(0, 40)}…` : node.text;
+    text.textContent = truncateText(node.text, NODE_TEXT_MAX_LENGTH);
     row.appendChild(text);
   } else if (node.children > 0) {
     const badge = document.createElement('span');
@@ -429,9 +463,16 @@ function createNodeElement(node: SerializedNode, index: number, depth = 0): HTML
 function clearResults(): void {
   matchCount.textContent = '0';
   matchCount.classList.remove('badge--unique');
+  clearResultPreview();
+  hideError();
+}
+
+function clearResultPreview(): void {
+  selectedTreeIndex = -1;
+  resultSummary.textContent = '';
+  resultSummary.hidden = true;
   resultTree.innerHTML = '';
   resultTree.hidden = true;
-  hideError();
 }
 
 function showError(msg: string): void {
@@ -445,6 +486,57 @@ function hideError(): void {
   xpathInput.classList.remove('input--error');
 }
 
+async function clearPreviewHighlights(): Promise<void> {
+  await sendMessage({ type: 'highlight:clear-preview' });
+}
+
+async function clearAllHighlights(): Promise<void> {
+  await sendMessage({ type: 'highlight:clear' });
+}
+
+function describeNode(node: SerializedNode): string {
+  const text = normalizeWhitespace(node.text);
+  if (node.tag === '#text') {
+    return text ? `"${truncateText(text, NODE_TEXT_MAX_LENGTH)}"` : getMessage('NODE_NO_TEXT');
+  }
+
+  const attrs = new Map(node.attrs);
+  let selector = node.tag;
+  const id = attrs.get('id');
+  if (id) {
+    selector += `#${truncateText(id, ATTR_VALUE_MAX_LENGTH)}`;
+  } else {
+    const attrPriority = [
+      'data-testid',
+      'data-test',
+      'data-qa',
+      'data-cy',
+      'data-automation',
+      'name',
+      'aria-label',
+      'role',
+      'type',
+    ];
+    for (const attr of attrPriority) {
+      const value = attrs.get(attr);
+      if (!value) continue;
+      selector += `[${attr}="${truncateText(value, ATTR_VALUE_MAX_LENGTH)}"]`;
+      break;
+    }
+  }
+
+  const textPreview = text ? `"${truncateText(text, NODE_TEXT_MAX_LENGTH)}"` : getMessage('NODE_NO_TEXT');
+  return `${selector} / ${textPreview}`;
+}
+
+function normalizeWhitespace(value: string): string {
+  return value.replace(/\s+/g, ' ').trim();
+}
+
+function truncateText(value: string, maxLength: number): string {
+  return value.length > maxLength ? `${value.slice(0, maxLength)}...` : value;
+}
+
 async function copyToClipboard(text: string, element: HTMLElement): Promise<void> {
   try {
     await navigator.clipboard.writeText(text);
@@ -452,7 +544,7 @@ async function copyToClipboard(text: string, element: HTMLElement): Promise<void
     element.classList.add(flashClass);
     setTimeout(() => element.classList.remove(flashClass), COPY_FLASH_MS);
   } catch {
-    // Fallback: select text
+    // No fallback in v1.0 - clipboard access is expected in extension pages.
   }
 }
 

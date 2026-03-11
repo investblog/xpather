@@ -98,6 +98,12 @@ export default defineBackground(() => {
         break;
       }
 
+      case 'highlight:clear-preview': {
+        await sendToTab(tabId, message);
+        sendResponse({ ok: true });
+        break;
+      }
+
       case 'highlight:clear': {
         await sendToTab(tabId, message);
         void browser.action.setBadgeText({ text: '', tabId });

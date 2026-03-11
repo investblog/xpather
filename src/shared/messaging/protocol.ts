@@ -7,6 +7,7 @@ export type MessageType =
   | 'xpath:evaluate'
   | 'xpath:result'
   | 'highlight:preview'
+  | 'highlight:clear-preview'
   | 'highlight:clear'
   | 'state:get'
   | 'state:current';
@@ -40,6 +41,10 @@ export interface HighlightPreviewMessage {
   index?: number;
 }
 
+export interface HighlightClearPreviewMessage {
+  type: 'highlight:clear-preview';
+}
+
 export interface HighlightClearMessage {
   type: 'highlight:clear';
 }
@@ -60,6 +65,7 @@ export type ExtensionMessage =
   | XPathEvaluateMessage
   | XPathResultMessage
   | HighlightPreviewMessage
+  | HighlightClearPreviewMessage
   | HighlightClearMessage
   | StateGetMessage
   | StateCurrentMessage;

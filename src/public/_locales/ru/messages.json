@@ -3,55 +3,55 @@
     "message": "Xpather"
   },
   "EXTENSION_DESCRIPTION": {
-    "message": "Find, generate and test XPath expressions. Smart variants, element picker, zero telemetry."
+    "message": "Поиск, генерация и проверка XPath-выражений. Умные варианты, выбор элемента, нулевая телеметрия."
   },
   "COMMAND_TOGGLE_PICKER": {
-    "message": "Toggle element picker"
+    "message": "Переключить режим выбора элемента"
   },
   "VARIANTS_TITLE": {
-    "message": "Variants"
+    "message": "Варианты"
   },
   "HINT_PICK": {
-    "message": "Alt+hover · Alt+click · Esc to cancel"
+    "message": "Alt+наведение / Alt+клик / Esc для отмены"
   },
   "STRATEGY_ID": {
-    "message": "By ID"
+    "message": "По ID"
   },
   "STRATEGY_DATA_ATTR": {
-    "message": "By data-*"
+    "message": "По data-*"
   },
   "STRATEGY_ATTRIBUTE": {
-    "message": "By attribute"
+    "message": "По атрибуту"
   },
   "STRATEGY_TEXT": {
-    "message": "By text"
+    "message": "По тексту"
   },
   "STRATEGY_CLASS": {
-    "message": "By class"
+    "message": "По классу"
   },
   "STRATEGY_OPTIMIZED": {
-    "message": "Shortest path"
+    "message": "Кратчайший путь"
   },
   "STRATEGY_ABSOLUTE": {
-    "message": "Absolute path"
+    "message": "Абсолютный путь"
   },
   "BEST_VARIANT": {
-    "message": "best"
+    "message": "Лучший"
   },
   "COPY_SUCCESS": {
-    "message": "Copied!"
+    "message": "Скопировано!"
   },
   "INVALID_XPATH": {
-    "message": "Invalid XPath expression"
+    "message": "Некорректное XPath-выражение"
   },
   "UNSUPPORTED_RESULT_TYPE": {
-    "message": "Only node results are supported"
+    "message": "Поддерживаются только результаты-узлы"
   },
   "TOO_MANY_MATCHES": {
-    "message": "Too many matches (result truncated)"
+    "message": "Слишком много совпадений (результат обрезан)"
   },
   "MATCHES_COUNT": {
-    "message": "$COUNT$ matches",
+    "message": "$COUNT$ совпадений",
     "placeholders": {
       "count": {
         "content": "$1"
@@ -59,25 +59,34 @@
     }
   },
   "UNIQUE_MATCH": {
-    "message": "Unique match"
+    "message": "Уникальное совпадение"
   },
   "PICK_ELEMENT": {
-    "message": "Pick element"
+    "message": "Выбрать элемент"
   },
   "PICK_ELEMENT_STOP": {
-    "message": "Stop picker"
+    "message": "Остановить выбор"
   },
   "TOGGLE_THEME": {
-    "message": "Toggle theme"
+    "message": "Переключить тему"
   },
   "PIN_SIDE_PANEL": {
-    "message": "Pin to side panel"
+    "message": "Закрепить в боковой панели"
   },
   "COPY_XPATH": {
-    "message": "Copy XPath"
+    "message": "Скопировать XPath"
+  },
+  "CLEAR_INPUT": {
+    "message": "Очистить поле"
+  },
+  "XPATH_INPUT_LABEL": {
+    "message": "XPath-выражение"
+  },
+  "XPATH_PLACEHOLDER": {
+    "message": "//div[@id=\"example\"]"
   },
   "MORE_RESULTS": {
-    "message": "… $COUNT$ more",
+    "message": "... еще $COUNT$",
     "placeholders": {
       "count": {
         "content": "$1"
@@ -85,9 +94,37 @@
     }
   },
   "RATE_EXTENSION": {
-    "message": "Rate"
+    "message": "Оценить"
   },
   "GITHUB": {
     "message": "GitHub"
+  },
+  "SPONSOR_TITLE": {
+    "message": "301.st - The Traffic Control Plane"
+  },
+  "FIRST_MATCH_SUMMARY": {
+    "message": "Первое совпадение: $NODE$",
+    "placeholders": {
+      "node": {
+        "content": "$1"
+      }
+    }
+  },
+  "MATCHES_PREVIEW_SUMMARY": {
+    "message": "Совпадений: $COUNT$, первое: $NODE$",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      },
+      "node": {
+        "content": "$2"
+      }
+    }
+  },
+  "NODE_NO_TEXT": {
+    "message": "без текста"
+  },
+  "PICKER_TOAST": {
+    "message": "Удерживайте Alt и наведите для подсветки / Alt + клик для выбора / Esc для отмены"
   }
 }

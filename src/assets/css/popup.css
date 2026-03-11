@@ -187,6 +187,20 @@ body.sidepanel .popup__variants {
   background: var(--badge-unique-bg);
 }
 
+.result-summary {
+  margin-top: 6px;
+  padding: 6px 8px;
+  font-size: 11px;
+  line-height: 1.45;
+  color: var(--text-secondary);
+  background: var(--bg-secondary);
+  border-radius: 4px;
+}
+
+.result-summary[hidden] {
+  display: none;
+}
+
 .result-tree {
   margin-top: 6px;
   padding: 4px 0;
@@ -428,3 +442,4 @@ body.sidepanel .popup__variants {
 .popup__link--icon:hover {
   opacity: 1;
 }
+
