@@ -5,16 +5,31 @@ export default defineConfig({
   srcDir: 'src',
   outDir: 'dist',
 
-  // Remove host_permissions and empty content_scripts added by WXT for runtime content scripts.
-  // We inject on demand via scripting.executeScript + activeTab - no <all_urls> needed.
+  // Chrome MV3: strip host_permissions and content_scripts — inject on demand via
+  // scripting.executeScript + activeTab, no <all_urls> needed.
+  // Firefox MV2: declare content_scripts in manifest for auto-injection — activeTab
+  // is not granted from sidebar_action, so on-demand injection fails without host perms.
   hooks: {
     'build:manifestGenerated': (_wxt, manifest) => {
       const mutableManifest = manifest as unknown as {
         host_permissions?: unknown;
-        content_scripts?: unknown;
+        content_scripts?: { matches?: string[]; js?: string[]; run_at?: string }[];
+        permissions?: string[];
       };
-      delete mutableManifest.host_permissions;
-      delete mutableManifest.content_scripts;
+      if (manifest.manifest_version === 3) {
+        delete mutableManifest.host_permissions;
+        delete mutableManifest.content_scripts;
+      } else {
+        // Firefox MV2: WXT leaves content_scripts empty for runtime registration.
+        // Fill it so the script auto-injects on all http/https pages.
+        mutableManifest.content_scripts = [
+          {
+            matches: ['http://*/*', 'https://*/*'],
+            js: ['content-scripts/content.js'],
+            run_at: 'document_idle',
+          },
+        ];
+      }
     },
   },
 
