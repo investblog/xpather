@@ -182,6 +182,14 @@ export default defineBackground(() => {
       tabStates.delete(tabId);
       injectedTabs.delete(tabId);
       void browser.action.setBadgeText({ text: '', tabId });
+
+      // Notify popup/sidebar so it resets picker button & results
+      void browser.runtime
+        .sendMessage({
+          type: 'state:current',
+          state: getTabState(tabId),
+        } satisfies ExtensionMessage)
+        .catch(() => {});
     }
   });
 });

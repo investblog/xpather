@@ -322,6 +322,15 @@ browser.runtime.onMessage.addListener((raw: unknown) => {
   if (message.type === 'picker:result') {
     setPickerState(false);
     renderVariants(message.variants);
+  } else if (message.type === 'state:current') {
+    // Page navigated — reset UI to match background state
+    setPickerState(message.state.pickerActive);
+    if (!message.state.lastInput) {
+      xpathInput.value = '';
+      currentXPath = '';
+      updateInputControls();
+      clearResults();
+    }
   }
 });
 
