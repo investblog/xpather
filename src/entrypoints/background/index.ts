@@ -52,7 +52,14 @@ export default defineBackground(() => {
     sendResponse: (response: unknown) => void,
   ): Promise<void> {
     const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
-    if (!tab?.id || !isScriptableUrl(tab.url)) {
+    if (!tab?.id) {
+      sendResponse({ ok: false, error: 'TAB_NOT_SCRIPTABLE' });
+      return;
+    }
+
+    // tab.url may be undefined in Firefox sidebar (no `tabs` permission).
+    // Skip the URL check and let ensureContentScript fail naturally on non-scriptable pages.
+    if (tab.url && !isScriptableUrl(tab.url)) {
       sendResponse({ ok: false, error: 'TAB_NOT_SCRIPTABLE' });
       return;
     }
@@ -151,7 +158,7 @@ export default defineBackground(() => {
     if (command !== 'toggle-picker') return;
 
     const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
-    if (!tab?.id || !isScriptableUrl(tab.url)) return;
+    if (!tab?.id || (tab.url && !isScriptableUrl(tab.url))) return;
 
     const state = getTabState(tab.id);
     if (state.pickerActive) {
