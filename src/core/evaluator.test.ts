@@ -55,4 +55,13 @@ describe('evaluateXPath', () => {
     expect(result.count).toBe(2);
     expect(result.truncated).toBe(false);
   });
+
+  it('uses ascii ellipsis when truncating long attribute values', () => {
+    const longTitle = 'a'.repeat(90);
+    document.body.innerHTML = `<div title="${longTitle}">Hello</div>`;
+
+    const result = evaluateXPath('//div');
+
+    expect(result.nodes[0]?.attrs).toContainEqual(['title', `${'a'.repeat(80)}...`]);
+  });
 });

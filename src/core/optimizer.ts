@@ -45,7 +45,7 @@ function tryAttributeStep(element: Element, tag: string, doc: Document): string 
     const value = element.getAttribute(attr);
     if (!value) continue;
 
-    const step = `${tag}[@${attr}="${escapeXPathString(value)}"]`;
+    const step = `${tag}[@${attr}=${escapeXPathString(value)}]`;
     const xpath = `//${step}`;
     const result = evaluateXPathNodes(xpath, doc);
     if (result.count === 1) return step;
@@ -62,7 +62,7 @@ function tryClassStep(element: Element, tag: string, _doc: Document): string | n
     if (/[0-9a-f]{6,}/i.test(cls)) continue;
     if (/^[a-z]{1,3}-\d+$/.test(cls)) continue;
 
-    return `${tag}[contains(concat(" ", normalize-space(@class), " "), " ${escapeXPathString(cls)} ")]`;
+    return `${tag}[contains(concat(" ", normalize-space(@class), " "), ${escapeXPathString(` ${cls} `)})]`;
   }
 
   return null;

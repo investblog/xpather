@@ -44,6 +44,9 @@
   "INVALID_XPATH": {
     "message": "Invalid XPath expression"
   },
+  "TAB_NOT_SCRIPTABLE": {
+    "message": "Open a regular http/https page to use Xpather."
+  },
   "UNSUPPORTED_RESULT_TYPE": {
     "message": "Only node results are supported"
   },

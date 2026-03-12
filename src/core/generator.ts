@@ -58,7 +58,7 @@ function generateIdXPaths(element: Element, doc: Document): string[] {
   // Direct id
   const id = element.getAttribute('id');
   if (id && isUniqueId(id, doc)) {
-    results.push(`//${tag}[@id="${escapeXPathString(id)}"]`);
+    results.push(`//${tag}[@id=${escapeXPathString(id)}]`);
   }
 
   // Ancestor id + relative path
@@ -68,7 +68,7 @@ function generateIdXPaths(element: Element, doc: Document): string[] {
     const ancestorId = ancestor.getAttribute('id');
     if (ancestorId && isUniqueId(ancestorId, doc)) {
       const relPath = relativeParts.reverse().join('/');
-      results.push(`//*[@id="${escapeXPathString(ancestorId)}"]//${relPath}`);
+      results.push(`//*[@id=${escapeXPathString(ancestorId)}]//${relPath}`);
       break;
     }
     relativeParts.push(ancestor.tagName.toLowerCase());
@@ -85,7 +85,7 @@ function generateDataAttrXPaths(element: Element, _doc: Document): string[] {
   for (const attr of DATA_ATTR_PRIORITY) {
     const value = element.getAttribute(attr);
     if (value) {
-      results.push(`//${tag}[@${attr}="${escapeXPathString(value)}"]`);
+      results.push(`//${tag}[@${attr}=${escapeXPathString(value)}]`);
     }
   }
 
@@ -108,7 +108,7 @@ function generateAttributeXPaths(element: Element, doc: Document): string[] {
 
   // Try single attributes first
   for (const { attr, value } of candidates) {
-    const xpath = `//${tag}[@${attr}="${escapeXPathString(value)}"]`;
+    const xpath = `//${tag}[@${attr}=${escapeXPathString(value)}]`;
     const res = evaluateXPathNodes(xpath, doc);
     if (res.count === 1) {
       results.push(xpath);
@@ -122,7 +122,7 @@ function generateAttributeXPaths(element: Element, doc: Document): string[] {
       for (let j = i + 1; j < candidates.length && results.length < MAX_PER_STRATEGY; j++) {
         const a = candidates[i];
         const b = candidates[j];
-        const xpath = `//${tag}[@${a.attr}="${escapeXPathString(a.value)}"][@${b.attr}="${escapeXPathString(b.value)}"]`;
+        const xpath = `//${tag}[@${a.attr}=${escapeXPathString(a.value)}][@${b.attr}=${escapeXPathString(b.value)}]`;
         const res = evaluateXPathNodes(xpath, doc);
         if (res.count === 1) {
           results.push(xpath);
@@ -134,7 +134,7 @@ function generateAttributeXPaths(element: Element, doc: Document): string[] {
   // If nothing is unique, emit best single-attr anyway
   if (results.length === 0 && candidates.length > 0) {
     const { attr, value } = candidates[0];
-    results.push(`//${tag}[@${attr}="${escapeXPathString(value)}"]`);
+    results.push(`//${tag}[@${attr}=${escapeXPathString(value)}]`);
   }
 
   return results;
@@ -150,12 +150,12 @@ function generateTextXPaths(element: Element, _doc: Document): string[] {
 
   // Exact match with normalize-space
   const escaped = escapeXPathString(text);
-  results.push(`//*[normalize-space(.)="${escaped}"]`);
+  results.push(`//*[normalize-space(.)=${escaped}]`);
 
   // Contains for shorter substring if text has spaces (multi-word)
   if (text.includes(' ') && text.length > 20) {
     const short = text.split(' ').slice(0, 3).join(' ');
-    results.push(`//*[contains(normalize-space(.), "${escapeXPathString(short)}")]`);
+    results.push(`//*[contains(normalize-space(.), ${escapeXPathString(short)})]`);
   }
 
   return results;
@@ -169,7 +169,7 @@ function generateClassXPaths(element: Element, _doc: Document): string[] {
 
   for (const cls of meaningful) {
     if (results.length >= MAX_PER_STRATEGY) break;
-    results.push(`//${tag}[contains(concat(" ", normalize-space(@class), " "), " ${escapeXPathString(cls)} ")]`);
+    results.push(`//${tag}[contains(concat(" ", normalize-space(@class), " "), ${escapeXPathString(` ${cls} `)})]`);
   }
 
   return results;
@@ -247,11 +247,24 @@ function isTokenLike(text: string): boolean {
 }
 
 export function escapeXPathString(str: string): string {
-  if (!str.includes('"')) return str;
-  if (!str.includes("'")) return str;
-  // Use concat() for strings with both quotes
+  if (!str.includes('"')) return `"${str}"`;
+  if (!str.includes("'")) return `'${str}'`;
+
   const parts = str.split('"');
-  return `", '"', "`.replace(/.*/, () => {
-    return parts.map((p) => `"${p}"`).join(", '\"', ");
-  });
+  const literals: string[] = [];
+
+  for (let i = 0; i < parts.length; i++) {
+    if (parts[i]) {
+      literals.push(`"${parts[i]}"`);
+    }
+    if (i < parts.length - 1) {
+      literals.push(`'"'`);
+    }
+  }
+
+  if (literals.length === 0) {
+    return '""';
+  }
+
+  return literals.length === 1 ? literals[0] : `concat(${literals.join(', ')})`;
 }

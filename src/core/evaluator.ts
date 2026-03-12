@@ -77,7 +77,7 @@ function serializeNode(node: Node, expand = false): SerializedNode {
     const el = node as Element;
     const attrs: [string, string][] = [];
     for (const attr of el.attributes) {
-      attrs.push([attr.name, attr.value.length > 80 ? `${attr.value.slice(0, 80)}…` : attr.value]);
+      attrs.push([attr.name, attr.value.length > 80 ? `${attr.value.slice(0, 80)}...` : attr.value]);
     }
     const result: SerializedNode = {
       tag: el.tagName.toLowerCase(),

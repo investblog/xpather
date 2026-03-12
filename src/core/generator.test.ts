@@ -95,6 +95,25 @@ describe('generateVariants', () => {
     }
   });
 
+  it('generates valid XPath for attributes with mixed quotes', () => {
+    document.body.innerHTML = `<button aria-label="He said &quot;it's ready&quot;">Go</button>`;
+    const el = document.querySelector('button')!;
+    const variants = generateVariants(el, document);
+
+    const attributeVariant = variants.find((v) => v.strategy === 'attribute');
+    expect(attributeVariant).toBeDefined();
+
+    const result = document.evaluate(
+      attributeVariant!.xpath,
+      document,
+      null,
+      XPathResult.ORDERED_NODE_SNAPSHOT_TYPE,
+      null,
+    );
+
+    expect(result.snapshotLength).toBe(1);
+  });
+
   it('includes matchCount for each variant', () => {
     document.body.innerHTML = '<button id="submit">Go</button>';
     const el = document.querySelector('button')!;

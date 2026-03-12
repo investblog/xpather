@@ -5,7 +5,7 @@ import { getStoreInfo } from '@shared/store-links';
 import { cycleTheme, initTheme } from '@shared/theme';
 import type { SerializedNode, XPathVariant } from '@shared/types';
 
-const GITHUB_URL = 'https://github.com/nicksulkers/xpather';
+const GITHUB_URL = 'https://github.com/investblog/xpather';
 const NODE_TEXT_MAX_LENGTH = 40;
 const ATTR_VALUE_MAX_LENGTH = 24;
 
@@ -105,10 +105,17 @@ window.addEventListener('pagehide', () => {
 
 // --- Init: load state from background ---
 async function loadState(): Promise<void> {
-  const response = (await browser.runtime.sendMessage({ type: 'state:get' })) as StateCurrentMessage;
-  if (!response?.state) return;
+  const response = await browser.runtime.sendMessage({ type: 'state:get' });
+  const responseError = getResponseError(response);
+  if (responseError) {
+    applyUnsupportedPageState(responseError);
+    return;
+  }
 
-  const { lastInput, lastVariants, pickerActive: isActive } = response.state;
+  const stateResponse = response as StateCurrentMessage | null;
+  if (!stateResponse?.state) return;
+
+  const { lastInput, lastVariants, pickerActive: isActive } = stateResponse.state;
   if (lastInput) {
     xpathInput.value = lastInput;
     currentXPath = lastInput;
@@ -177,10 +184,18 @@ async function evaluateInput(): Promise<void> {
   }
 
   await clearPreviewHighlights();
-  const response = (await sendMessage({ type: 'xpath:evaluate', xpath })) as XPathResultMessage | null;
-  if (!response?.result) return;
+  const response = await sendMessage({ type: 'xpath:evaluate', xpath });
+  const responseError = getResponseError(response);
+  if (responseError) {
+    applyUnsupportedPageState(responseError);
+    await clearAllHighlights();
+    return;
+  }
 
-  const { result } = response;
+  const resultResponse = response as XPathResultMessage | null;
+  if (!resultResponse?.result) return;
+
+  const { result } = resultResponse;
 
   if (result.error) {
     clearResultPreview();
@@ -265,17 +280,31 @@ function renderVariants(variants: XPathVariant[]): void {
 }
 
 // --- Pick button (toggle) ---
-btnPick.addEventListener('click', () => {
+btnPick.addEventListener('click', async () => {
   if (pickerActive) {
-    void sendMessage({ type: 'picker:stop' });
-    setPickerState(false);
-  } else {
-    void sendMessage({ type: 'picker:start' });
-    setPickerState(true);
-
-    if (!isSidePanel) {
-      window.close();
+    const response = await sendMessage({ type: 'picker:stop' });
+    const responseError = getResponseError(response);
+    if (responseError) {
+      applyUnsupportedPageState(responseError);
+      return;
     }
+
+    setPickerState(false);
+    return;
+  }
+
+  const response = await sendMessage({ type: 'picker:start' });
+  const responseError = getResponseError(response);
+  if (responseError) {
+    applyUnsupportedPageState(responseError);
+    return;
+  }
+
+  hideError();
+  setPickerState(true);
+
+  if (!isSidePanel) {
+    window.close();
   }
 });
 
@@ -467,6 +496,26 @@ function clearResults(): void {
   hideError();
 }
 
+function clearVariants(): void {
+  variantList.innerHTML = '';
+  variantsSection.hidden = true;
+}
+
+function setPageActionsDisabled(disabled: boolean): void {
+  xpathInput.disabled = disabled;
+  btnPick.disabled = disabled;
+  btnClear.disabled = disabled;
+  btnCopy.disabled = disabled;
+  btnPin.disabled = disabled;
+}
+
+function applyUnsupportedPageState(errorKey: string): void {
+  clearResults();
+  clearVariants();
+  setPageActionsDisabled(true);
+  showError(getMessage(errorKey));
+}
+
 function clearResultPreview(): void {
   selectedTreeIndex = -1;
   resultSummary.textContent = '';
@@ -546,6 +595,13 @@ async function copyToClipboard(text: string, element: HTMLElement): Promise<void
   } catch {
     // No fallback in v1.0 - clipboard access is expected in extension pages.
   }
+}
+
+function getResponseError(response: unknown): string | null {
+  if (!response || typeof response !== 'object') return null;
+
+  const error = (response as { error?: unknown }).error;
+  return typeof error === 'string' ? error : null;
 }
 
 async function sendMessage(message: ExtensionMessage): Promise<unknown> {

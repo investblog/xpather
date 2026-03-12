@@ -44,6 +44,9 @@
   "INVALID_XPATH": {
     "message": "Некорректное XPath-выражение"
   },
+  "TAB_NOT_SCRIPTABLE": {
+    "message": "Откройте обычную страницу сайта по http/https, чтобы использовать Xpather."
+  },
   "UNSUPPORTED_RESULT_TYPE": {
     "message": "Поддерживаются только результаты-узлы"
   },
