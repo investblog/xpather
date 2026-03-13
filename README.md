@@ -1,5 +1,9 @@
 <p align="center">
-  <img src="src/public/icons/wordmark.svg" width="380" height="96" alt="Xpather">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="src/public/icons/wordmark-dark.svg">
+    <source media="(prefers-color-scheme: light)" srcset="src/public/icons/wordmark-light.svg">
+    <img src="src/public/icons/wordmark-dark.svg" width="380" height="96" alt="Xpather">
+  </picture>
 </p>
 
 Find, generate and test XPath expressions. Browser extension with smart variants, element picker, and zero telemetry.
