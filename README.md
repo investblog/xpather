@@ -54,6 +54,8 @@ npm run check          # Typecheck + lint + test
 
 Xpather makes zero network requests. No analytics, no telemetry, no remote code. XPath evaluation happens in the page context via content script and results are never persisted. The only local data is your theme preference.
 
+Full privacy policy: [PRIVACY.md](PRIVACY.md)
+
 ## License
 
 [Apache 2.0](LICENSE)
