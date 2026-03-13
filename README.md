@@ -1,8 +1,6 @@
 <p align="center">
-  <img src="src/public/icons/logo.svg" width="80" height="80" alt="Xpather logo">
+  <img src="src/public/icons/wordmark.svg" width="380" height="96" alt="Xpather">
 </p>
-
-# Xpather
 
 Find, generate and test XPath expressions. Browser extension with smart variants, element picker, and zero telemetry.
 
