@@ -8,6 +8,7 @@
 
 Find, generate and test XPath expressions. Browser extension with smart variants, element picker, and zero telemetry.
 
+[![Chrome Web Store](https://img.shields.io/chrome-web-store/v/ahmohplecnjmjmcjmejilkeahddegpme?label=Chrome)](https://chromewebstore.google.com/detail/xpather/ahmohplecnjmjmcjmejilkeahddegpme)
 [![License](https://img.shields.io/badge/License-Apache%202.0-green.svg)](LICENSE)
 
 ## Features
